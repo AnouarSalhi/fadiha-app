@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `prank` ADD COLUMN `visits` INTEGER NOT NULL DEFAULT 0;
