@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 
 export default function Home() {
   const [username, setUsername] = useState("");
-  const [prank, setPrank] = useState("prank1");
+  const [prank] = useState("prank1");
   const [link, setLink] = useState("");
   const [copied, setCopied] = useState(false); // New state for copied status
   const inputRef = useRef(null);

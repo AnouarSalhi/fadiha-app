@@ -4,7 +4,7 @@ import Head from "next/head";
 import { useState } from "react";
 import Link from "next/link";
 
-export default function PrankPage({ username:string, prank,user}) {
+export default function PrankPage({ username, prank,user}) {
   const [isPlaying, setIsPlaying] = useState(false);
 
   return (
