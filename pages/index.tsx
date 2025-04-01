@@ -5,7 +5,7 @@ export default function Home() {
   const [prank] = useState("prank1");
   const [link, setLink] = useState("");
   const [copied, setCopied] = useState(false); // New state for copied status
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async () => {
     const res = await fetch("/api/reserve", {
