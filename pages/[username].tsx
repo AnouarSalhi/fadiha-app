@@ -15,9 +15,7 @@ interface PrankPageProps {
 export default function PrankPage({ username, prank }: PrankPageProps) {
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const getEmbedUrl = (url: string) => {
-    return url.replace("watch?v=", "embed/");
-  };
+ 
 
   return (
     <>
