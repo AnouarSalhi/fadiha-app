@@ -2,10 +2,22 @@ import { GetServerSideProps } from "next";
 import { prisma } from "@/lib/prisma";
 import Head from "next/head";
 import { useState } from "react";
-import Link from "next/link";
 
-export default function PrankPage({ username, prank,user}) {
+// Define the type for props
+interface PrankPageProps {
+  username: string;
+  prank: {
+    visits: number;
+    thumbnailUrl?: string;
+  };
+}
+
+export default function PrankPage({ username, prank }: PrankPageProps) {
   const [isPlaying, setIsPlaying] = useState(false);
+
+  const getEmbedUrl = (url: string) => {
+    return url.replace("watch?v=", "embed/");
+  };
 
   return (
     <>
@@ -17,9 +29,8 @@ export default function PrankPage({ username, prank,user}) {
         <meta property="og:type" content="video.other" />
       </Head>
 
-      <div className="flex flex-col items-center justify-center h-screen  text-center">
-      😱😳
-        <h1 className="text-2xl font-bold">{username} فضيحة</h1>
+      <div className="flex flex-col items-center justify-center h-screen bg-black text-white text-center">
+        <h1 className="text-2xl font-bold">{username} فضيحة </h1>
         
         {!isPlaying ? (
           <div className="mt-4 items-center justify-center cursor-pointer" onClick={() => setIsPlaying(true)}>
@@ -28,36 +39,23 @@ export default function PrankPage({ username, prank,user}) {
             </button>
           </div>
         ) : (
-          <>
-            <video
-              src="vedioprank.mp4"
-              poster="/tham.jpg"
-              controls
-              className="mt-4 w-96"
-              autoPlay
-              loop
-              playsInline
-            ></video>
-
-            {/* Show this text only when the video is displayed */}
-            <div className="mt-2">
-              <p className="text-gray-400">شخص شاهدة المقلب</p>
-              <Link href="/">
-  <span className="text-blue-500 underline cursor-pointer">
-    أنشئ مقلب فضيحة بالضغط هنا
-  </span>
-</Link>            </div>
-          </>
+          <video src="vedioprank.mp4" poster="/tham.jpg" controls className="mt-4 w-96" autoPlay loop playsInline></video>
         )}
-                      <p className="text-lg font-bold">👀 {user.visits+1} عدد المشاهدات</p>
-                      <p className="mt-12 text-xs text-gray-600">{prank.visits}</p>
+
+        👀 {prank.visits} عدد المشاهدات 
+        <p className="text-gray-400">شخص شاهدة المقلب</p>
       </div>
     </>
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  const user = await prisma.user.findUnique({ where: { username: params?.username as string } });
+// Define the getServerSideProps function with proper typing
+export const getServerSideProps: GetServerSideProps<PrankPageProps> = async ({ params }) => {
+  if (!params?.username || typeof params.username !== "string") {
+    return { notFound: true };
+  }
+
+  const user = await prisma.user.findUnique({ where: { username: params.username } });
   if (!user) return { notFound: true };
 
   const prank = await prisma.prank.update({
@@ -65,10 +63,5 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     data: { visits: { increment: 1 } }, // Increase visit count
   });
 
- await prisma.user.update({
-    where: { username: user.username },
-    data: { visits: { increment: 1 } }, // Increase visit count
-  });
-
-  return { props: { username: user.username, prank,user } };
+  return { props: { username: user.username, prank } };
 };
