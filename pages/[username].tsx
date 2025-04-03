@@ -2,6 +2,7 @@ import { GetServerSideProps } from "next";
 import { prisma } from "@/lib/prisma";
 import Head from "next/head";
 import { useState } from "react";
+import Link from "next/link";
 
 // Define the type for props
 interface PrankPageProps {
@@ -10,9 +11,12 @@ interface PrankPageProps {
     visits: number;
     thumbnailUrl?: string;
   };
+  user:{
+    visits:number
+  }
 }
 
-export default function PrankPage({ username, prank }: PrankPageProps) {
+export default function PrankPage({ username, prank,user }: PrankPageProps) {
   const [isPlaying, setIsPlaying] = useState(false);
 
  
@@ -40,8 +44,13 @@ export default function PrankPage({ username, prank }: PrankPageProps) {
           <video src="vedioprank.mp4" poster="/tham.jpg" controls className="mt-4 w-96" autoPlay loop playsInline></video>
         )}
 
-        👀 {prank.visits} عدد المشاهدات 
-        <p className="text-gray-400">شخص شاهدة المقلب</p>
+        👀 {user.visits+1} عدد المشاهدات 
+        {isPlaying &&
+        <Link href="/" className="text-blue-600 font-bold">
+أنشئ مقلب فضيحة بالضغط هنا     </Link>}
+        <h1 className="text-xs text-gray-600">
+          {prank.visits}
+        </h1>
       </div>
     </>
   );
@@ -52,14 +61,20 @@ export const getServerSideProps: GetServerSideProps<PrankPageProps> = async ({ p
   if (!params?.username || typeof params.username !== "string") {
     return { notFound: true };
   }
+  
 
   const user = await prisma.user.findUnique({ where: { username: params.username } });
+
   if (!user) return { notFound: true };
 
   const prank = await prisma.prank.update({
     where: { id: user.prankId },
     data: { visits: { increment: 1 } }, // Increase visit count
   });
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { visits: { increment: 1 } }, // Increase visit count
+  });
 
-  return { props: { username: user.username, prank } };
+  return { props: { username: user.username, prank ,user} };
 };
