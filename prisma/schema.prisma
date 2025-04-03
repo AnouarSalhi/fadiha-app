@@ -1,3 +1,9 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,17 +13,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model user {
+  id       String  @id @default(cuid()) // This should auto-generate a unique string ID.
+  username String  @unique(map: "User_username_key")
+  prankId  String
+  prank    prank   @relation(fields: [prankId], references: [id])  // Add relation to prank model
+  visits   Int     @default(0)
+}
+
 model prank {
   id           String @id
   title        String
   videoUrl     String
   thumbnailUrl String
   visits       Int    @default(0)
-}
-
-model user {
-  id       String @id
-  username String @unique(map: "User_username_key")
-  prankId  String
-  visits   Int    @default(0)
+  users        user[] // Add the relation to users
 }
