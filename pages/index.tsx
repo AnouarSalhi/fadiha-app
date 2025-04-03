@@ -7,6 +7,7 @@ export default function Home() {
   const [copied, setCopied] = useState(false); // New state for copied status
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Handle submit action
   const handleSubmit = async () => {
     const res = await fetch("/api/reserve", {
       method: "POST",
@@ -19,10 +20,11 @@ export default function Home() {
       setLink(window.location.origin + data.link);
       setCopied(false); // Reset copied status when new link is generated
     } else {
-      alert("Username taken. Try another.");
+      alert("هذا الإسم غير متاح, اختر اسما آخر ");
     }
   };
 
+  // Copy link to clipboard
   const copyToClipboard = () => {
     if (inputRef.current) {
       inputRef.current.select();
@@ -30,6 +32,12 @@ export default function Home() {
       setCopied(true); // Set copied to true
       setTimeout(() => setCopied(false), 2000); // Hide message after 2 seconds
     }
+  };
+
+  // Handle username input change (replace spaces with hyphens)
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newUsername = e.target.value.replace(/\s+/g, "-"); // Replace spaces with hyphens
+    setUsername(newUsername);
   };
 
   return (
@@ -43,7 +51,7 @@ export default function Home() {
           type="text"
           placeholder="إختر إسما"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={handleUsernameChange} // Use the updated handler here
           required
         />
       </div>
@@ -63,7 +71,7 @@ export default function Home() {
             className="p-2 w-full text-black bg-gray-200 cursor-pointer"
             onClick={copyToClipboard}
           />
-          {copied && <p className="text-green-500 mt-2">📋 تم النسخ بنجاح!</p>} 
+          {copied && <p className="text-green-500 mt-2">📋 تم النسخ بنجاح!</p>}
         </div>
       )}
     </div>
