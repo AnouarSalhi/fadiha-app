@@ -9,10 +9,13 @@ export default function Home() {
 
   // Handle submit action
   const handleSubmit = async () => {
+    // Replace spaces with hyphens in username before submitting
+    const formattedUsername = username.replace(/\s+/g, "-");
+
     const res = await fetch("/api/reserve", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, prankId: prank }),
+      body: JSON.stringify({ username: formattedUsername, prankId: prank }),
     });
 
     if (res.ok) {
@@ -34,12 +37,6 @@ export default function Home() {
     }
   };
 
-  // Handle username input change (replace spaces with hyphens)
-  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newUsername = e.target.value.replace(/\s+/g, "-"); // Replace spaces with hyphens
-    setUsername(newUsername);
-  };
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white text-black">
       <h1 className="text-xl my-4 font-bold">إمزح مع أصدقائك بمقلب فضيحة</h1>
@@ -51,7 +48,7 @@ export default function Home() {
           type="text"
           placeholder="إختر إسما"
           value={username}
-          onChange={handleUsernameChange} // Use the updated handler here
+          onChange={(e) => setUsername(e.target.value)} // Update username as user types
           required
         />
       </div>
