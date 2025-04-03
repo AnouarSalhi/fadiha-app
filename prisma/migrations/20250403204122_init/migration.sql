@@ -3,6 +3,7 @@ CREATE TABLE `User` (
     `id` VARCHAR(191) NOT NULL,
     `username` VARCHAR(191) NOT NULL,
     `prankId` VARCHAR(191) NOT NULL,
+    `visits` INTEGER NOT NULL DEFAULT 0,
 
     UNIQUE INDEX `User_username_key`(`username`),
     PRIMARY KEY (`id`)
@@ -14,6 +15,10 @@ CREATE TABLE `Prank` (
     `title` VARCHAR(191) NOT NULL,
     `videoUrl` VARCHAR(191) NOT NULL,
     `thumbnailUrl` VARCHAR(191) NOT NULL,
+    `visits` INTEGER NOT NULL DEFAULT 0,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `User` ADD CONSTRAINT `User_prankId_fkey` FOREIGN KEY (`prankId`) REFERENCES `Prank`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
